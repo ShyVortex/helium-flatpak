@@ -29,6 +29,6 @@ jobs:
       - name: Upload repo to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_GITHUB }}
           publish_branch: gh-pages
           publish_dir: repo
