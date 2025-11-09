@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Helium
+Comment=Privacy-focused Chromium-based browser
+Exec=helium %U
+Icon=com.imputnet.Helium
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+StartupNotify=true

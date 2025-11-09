@@ -1,0 +1,12 @@
+{
+  "appstream-compose": false,
+  "data": [
+    {
+      "type": "archive",
+      "url": "https://github.com/imputnet/helium-linux/releases/download/$version/helium-$version-x86_64_linux.tar.xz",
+      "version-pattern": "([0-9.]+)",
+      "sha256": "AUTO",
+      "dest": "helium-linux-x64.tar.gz"
+    }
+  ]
+}

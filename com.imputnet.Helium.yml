@@ -1,0 +1,73 @@
+app-id: com.imputnet.Helium
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+command: helium
+
+metadata:
+  name: Helium
+  summary: Private, fast, and honest web browser
+  description: |
+    Helium is a lightweight, privacy-focused browser built using Electron/Chromium.
+    This Flatpak package uses the prebuilt binary provided by the Helium Linux project.
+  homepage: https://github.com/imputnet/helium-linux
+  license: GPL-3.0-or-later
+  categories:
+    - Network
+    - WebBrowser
+  keywords:
+    - browser
+    - chromium
+    - privacy
+
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=x11
+  - --device=dri
+  - --filesystem=home
+  - --env=LD_LIBRARY_PATH=/app/lib/helium:$LD_LIBRARY_PATH
+  - --env=CHROME_DEVEL_SANDBOX_DISABLED=1
+  - --env=ICU_DATA_PATH=/app/lib/helium
+
+modules:
+  - name: helium
+    buildsystem: simple
+    build-commands:
+      - tar -xvf helium-linux-x64.tar.gz
+      - mkdir -p /app/lib/helium
+      - mkdir -p /app/bin
+      - cp -r helium-0.6.4.1-x86_64_linux/* /app/lib/helium
+      - install -Dm755 helium-0.6.4.1-x86_64_linux/chrome /app/lib/helium/helium.real
+
+      - echo '#!/bin/sh' > /app/bin/helium
+      - echo 'exec /app/lib/helium/helium.real --no-sandbox --test-type "$@"' >> /app/bin/helium
+      - chmod +x /app/bin/helium
+
+      - install -Dm644 com.imputnet.Helium.desktop /app/share/applications/com.imputnet.Helium.desktop
+
+      - mkdir -p icons/256x256 icons/128x128 icons/64x64
+      - cp com.imputnet.Helium.png icons/256x256/
+      - cp com.imputnet.Helium.png icons/128x128/
+      - cp com.imputnet.Helium.png icons/64x64/
+
+      - install -Dm644 icons/256x256/com.imputnet.Helium.png /app/share/icons/hicolor/256x256/apps/com.imputnet.Helium.png
+      - install -Dm644 icons/128x128/com.imputnet.Helium.png /app/share/icons/hicolor/128x128/apps/com.imputnet.Helium.png
+      - install -Dm644 icons/64x64/com.imputnet.Helium.png /app/share/icons/hicolor/64x64/apps/com.imputnet.Helium.png
+
+    sources:
+      - type: file
+        url: https://github.com/imputnet/helium-linux/releases/download/0.6.4.1/helium-0.6.4.1-x86_64_linux.tar.xz
+        sha256: f711159c6ca6e7bf6b47a46e9d2e075985779cb93538310819f83c3ed3434949
+        dest-filename: helium-linux-x64.tar.gz
+
+      - type: file
+        path: com.imputnet.Helium.desktop
+
+      - type: file
+        path: icons/128x128/com.imputnet.Helium.png
+      - type: file
+        path: icons/64x64/com.imputnet.Helium.png
+      - type: file
+        path: icons/256x256/com.imputnet.Helium.png
