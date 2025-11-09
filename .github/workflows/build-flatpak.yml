@@ -1,0 +1,29 @@
+name: Build and Publish Flatpak
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Flatpak tools
+        run: |
+          sudo apt update
+          sudo apt install -y flatpak flatpak-builder python3-flatpak external-data-checker
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --repo=repo build-dir computer.helium.Helium.yml
+
+      - name: Upload repo to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: repo
