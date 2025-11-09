@@ -8,7 +8,7 @@ x-annotations:
   org.flatpak.metadata.name: "Helium"
   org.flatpak.metadata.summary: "Private, fast, and honest web browser"
   org.flatpak.metadata.description: |
-    Helium is a lightweight, privacy-focused browser built using Electron/Chromium.
+    Helium is a lightweight, privacy-focused browser built upon Ungoogled Chromium.
     This Flatpak package uses the prebuilt binary provided by the Helium Linux project.
   org.flatpak.metadata.license: "GPL-3.0-or-later"
   org.flatpak.metadata.homepage: "https://github.com/imputnet/helium-linux"
@@ -18,14 +18,32 @@ finish-args:
   - --share=ipc
   - --socket=wayland
   - --socket=fallback-x11
+  - --socket=cups # allow printing
+  - --socket=pcsc
   - --device=dri
   - --socket=pulseaudio
+  - --allow=bluetooth
   - --filesystem=xdg-download
   - --filesystem=xdg-pictures
   - --filesystem=xdg-videos
+  - --filesystem=xdg-desktop
+  - --filesystem=/tmp
+  - --persist=.pki
   - --env=LD_LIBRARY_PATH=/app/lib/helium:$LD_LIBRARY_PATH
   - --env=CHROME_DEVEL_SANDBOX_DISABLED=1
   - --env=ICU_DATA_PATH=/app/lib/helium
+  # Allow PWAs
+  - --filesystem=home/.local/share/applications:create
+  - --filesystem=home/.local/share/icons:create
+  # GNOME-specific
+  - --filesystem=xdg-run/dconf
+  - --filesystem=~/.config/dconf:ro
+  - --talk-name=ca.desrt.dconf
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+  - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules
+  - --env=GSETTINGS_BACKEND=dconf
+  # KDE-specific
+  - --filesystem=~/.config/kioslaverc
 
 modules:
   - name: helium
