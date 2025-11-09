@@ -1,7 +1,7 @@
 # Helium Flatpak
 
-This folder contains a Flatpak manifest to package the latest prebuilt Helium Browser binary
-from the official GitHub releases.
+This folder contains a Flatpak manifest to package the latest prebuilt [Helium Browser](https://github.com/imputnet/helium) binary
+from the official [GitHub releases](https://github.com/imputnet/helium-linux/releases).
 
 ## Build and Install
 
