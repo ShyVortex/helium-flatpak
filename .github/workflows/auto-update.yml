@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Extract version from temp file
-          VERSION=$(grep -m1 'version:' version.txt | grep -oP '"\K[^"]+')
+          VERSION=$(grep -m1 'version:' version.txt | awk '{print $2}')
           echo "Detected new version: $VERSION"
 
           # Create Git tag

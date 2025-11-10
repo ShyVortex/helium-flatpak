@@ -29,7 +29,7 @@ CURRENT_VERSION=$(grep -Po 'helium-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$MANIFEST
 
 # --- Create temp file with version number ---
 touch version.txt
-echo "version: "$CURRENT_VERSION"" > version.txt
+echo "version: $CURRENT_VERSION" > version.txt
 
 if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
   echo "   Manifest already up to date ($CURRENT_VERSION). Checking SHA256..."
@@ -70,4 +70,4 @@ git add "$MANIFEST_FILE"
 git commit -m "update: helium ${LATEST_VERSION}"
 git push origin main
 
-echo "🚀 Changes committed and pushed: update: helium ${LATEST_VERSION}"
+echo "   Changes committed and pushed: update: helium ${LATEST_VERSION}"
