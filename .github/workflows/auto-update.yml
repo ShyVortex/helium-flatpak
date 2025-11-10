@@ -40,8 +40,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Extract version from the YAML file
-          VERSION=$(grep -m1 'version:' computer.helium.Helium.yml | grep -oP '"\K[^"]+')
+          # Extract version from temp file
+          VERSION=$(grep -m1 'version:' version.txt | grep -oP '"\K[^"]+')
           echo "Detected new version: $VERSION"
 
           # Create Git tag
