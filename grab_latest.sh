@@ -29,7 +29,7 @@ CURRENT_VERSION=$(grep -Po 'helium-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$MANIFEST
 
 # --- Create temp file with version number ---
 touch version.txt
-echo "version: $CURRENT_VERSION" > version.txt
+echo "version: "$CURRENT_VERSION"" > version.txt
 
 if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
   echo "   Manifest already up to date ($CURRENT_VERSION). Checking SHA256..."
