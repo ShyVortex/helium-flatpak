@@ -38,7 +38,7 @@ jobs:
       - name: Create new tag and release
         if: steps.check_diff.outputs.changed == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Extract version from the YAML file
           VERSION=$(grep -m1 'version:' computer.helium.Helium.yml | grep -oP '"\K[^"]+')
