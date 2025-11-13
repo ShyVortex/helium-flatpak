@@ -1,6 +1,10 @@
 name: Helium Auto Update
 
 on:
+  workflow_run:
+      workflows: ["Build and Publish Flatpak"]
+      types:
+        - completed
   schedule:
     - cron: "0 7 * * *" # runs every day at 07:00 UTC
   workflow_dispatch:
@@ -10,6 +14,7 @@ permissions:
 
 jobs:
   update-helium:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
