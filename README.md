@@ -16,7 +16,7 @@ flatpak run computer.helium.Helium
 Alternatively, you can install Helium directly from the Flatpak repository:
 
 ```bash
-flatpak remote-add --user helium-repo https://shyvortex.github.io/helium-flatpak/
+flatpak remote-add --user --no-gpg-verify helium-repo https://shyvortex.github.io/helium-flatpak/
 flatpak install helium-repo computer.helium.Helium
 flatpak run computer.helium.Helium
 ```
