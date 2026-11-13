@@ -51,6 +51,8 @@ finish-args:
   # Allow setting Helium as the default browser (see xdg-shim.py)
   - --filesystem=xdg-config/mimeapps.list
   - --env=HELIUM_DESKTOP=net.imput.helium.desktop
+  # Prefix PWA app_ids/launchers with our id; KWin rejects other app_ids from sandboxed windows
+  - --env=CHROME_WEB_APP_DESKTOP_ID_PREFIX=net.imput.helium.
   # GNOME-specific
   - --filesystem=xdg-run/dconf
   - --filesystem=~/.config/dconf:ro

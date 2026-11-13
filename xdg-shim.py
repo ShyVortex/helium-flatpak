@@ -7,6 +7,14 @@
 # writes directly to the host locations the sandbox has been granted:
 #   ~/.local/share/applications, ~/.local/share/icons, ~/.config/mimeapps.list
 #
+# Web app launchers are installed on the host as "<flatpak id>.<name>.desktop".
+# KWin replaces the Wayland app_id of sandboxed windows with the Flatpak id
+# unless it starts with that id, so helium.sh sets
+# CHROME_WEB_APP_DESKTOP_ID_PREFIX to match and each PWA gets its own window
+# identity and icon. Chromium itself still expects "<name>.desktop" in
+# $XDG_DATA_HOME/applications to know the launcher exists, so an unprefixed
+# copy is kept there, inside the sandbox where the desktop never sees it.
+#
 # Installed once and symlinked under each tool name; dispatches on argv[0].
 
 import configparser
@@ -17,7 +25,12 @@ import sys
 
 HOME = os.path.expanduser("~")
 HOST_APPS = os.path.join(HOME, ".local", "share", "applications")
-HOST_ICONS = os.path.join(HOME, ".local", "share", "icons", "hicolor")
+SANDBOX_APPS = os.path.join(
+    os.environ.get("XDG_DATA_HOME", os.path.join(HOME, ".local", "share")),
+    "applications",
+)
+HOST_ICONS_ROOT = os.path.join(HOME, ".local", "share", "icons")
+HOST_ICONS = os.path.join(HOST_ICONS_ROOT, "hicolor")
 HOST_MIMEAPPS = os.path.join(HOME, ".config", "mimeapps.list")
 
 BROWSER_TYPES = [
@@ -63,6 +76,7 @@ def split_first_token(value):
 
 def rewrite_exec(contents):
     launcher = host_launcher()
+    sandbox_data = os.environ.get("XDG_DATA_HOME", "")
     out = []
     for line in contents.splitlines():
         if line.startswith("Exec="):
@@ -72,6 +86,13 @@ def rewrite_exec(contents):
                 "helium.real",
             ):
                 line = "Exec=" + launcher + rest
+        elif line.startswith("Icon=") and sandbox_data:
+            # Chromium writes icon paths under the sandbox $XDG_DATA_HOME.
+            prefix = sandbox_data.rstrip("/") + "/icons/"
+            if line[len("Icon="):].startswith(prefix):
+                line = "Icon=" + os.path.join(
+                    HOST_ICONS_ROOT, line[len("Icon=") + len(prefix):]
+                )
         out.append(line)
     return "\n".join(out) + "\n"
 
@@ -82,7 +103,16 @@ def write_in_place(path, data):
         f.write(data)
 
 
-# ---------------------------------------------------------------- xdg-desktop-menu
+def host_desktop_name(name):
+    app = flatpak_info()[0]
+    return name if name.startswith(app + ".") else f"{app}.{name}"
+
+
+def unlink_quiet(path):
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
 
 
 def desktop_menu(args):
@@ -92,27 +122,28 @@ def desktop_menu(args):
     files = [a for a in rest if not a.startswith("--") and a not in ("user", "system")]
     if cmd == "install":
         os.makedirs(HOST_APPS, exist_ok=True)
+        os.makedirs(SANDBOX_APPS, exist_ok=True)
         for src in files:
             if not src.endswith(".desktop"):
                 continue  # .directory menu folders: no host access, skip
+            name = os.path.basename(src)
             with open(src, encoding="utf-8") as f:
                 data = rewrite_exec(f.read())
-            write_in_place(os.path.join(HOST_APPS, os.path.basename(src)), data)
+            write_in_place(os.path.join(HOST_APPS, host_desktop_name(name)), data)
+            write_in_place(os.path.join(SANDBOX_APPS, name), data)
+            if os.path.realpath(SANDBOX_APPS) != os.path.realpath(HOST_APPS):
+                unlink_quiet(os.path.join(HOST_APPS, name))  # left by older shim
         return 0
     if cmd == "uninstall":
         for name in files:
             if name.endswith(".desktop"):
-                try:
-                    os.unlink(os.path.join(HOST_APPS, os.path.basename(name)))
-                except FileNotFoundError:
-                    pass
+                name = os.path.basename(name)
+                unlink_quiet(os.path.join(HOST_APPS, host_desktop_name(name)))
+                unlink_quiet(os.path.join(SANDBOX_APPS, name))
         return 0
     if cmd == "forceupdate":
         return 0
     return 1
-
-
-# ------------------------------------------------------------- xdg-icon-resource
 
 
 def icon_resource(args):
@@ -157,9 +188,6 @@ def icon_resource(args):
                     pass
         return 0
     return 1
-
-
-# ------------------------------------------------------------------ xdg-settings
 
 
 def read_mimeapps():
