@@ -48,6 +48,11 @@ finish-args:
   # Allow PWAs
   - --filesystem=home/.local/share/applications:create
   - --filesystem=home/.local/share/icons:create
+  # Allow setting Helium as the default browser (see xdg-shim.py)
+  - --filesystem=xdg-config/mimeapps.list
+  - --env=HELIUM_DESKTOP=net.imput.helium.desktop
+  # Prefix PWA app_ids/launchers with our id; KWin rejects other app_ids from sandboxed windows
+  - --env=CHROME_WEB_APP_DESKTOP_ID_PREFIX=net.imput.helium.
   # GNOME-specific
   - --filesystem=xdg-run/dconf
   - --filesystem=~/.config/dconf:ro
@@ -110,6 +115,12 @@ modules:
       - install -Dm755 helium.sh /app/bin/helium
       - install -Dm644 cobalt.ini /app/etc/cobalt.ini
 
+      # xdg-utils stand-ins for PWA shortcuts and default browser handling
+      - install -Dm755 xdg-shim.py /app/libexec/xdg-shim
+      - ln -s ../libexec/xdg-shim /app/bin/xdg-desktop-menu
+      - ln -s ../libexec/xdg-shim /app/bin/xdg-icon-resource
+      - ln -s ../libexec/xdg-shim /app/bin/xdg-settings
+
       - install -Dm644 fonts-local.conf /app/etc/fonts/local.conf
       - ln -s /run/host/fonts /app/share/host-fonts
 
@@ -150,6 +161,8 @@ modules:
         path: helium.sh
       - type: file
         path: cobalt.ini
+      - type: file
+        path: xdg-shim.py
       - type: file
         path: fonts-local.conf
       - type: file
