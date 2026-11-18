@@ -91,4 +91,15 @@ for proot in "etc/chromium/policies" "etc/static/chromium/policies"; do
   done
 done
 
+if [ -n "${XDG_DATA_HOME}" ]; then
+  mkdir -p "${HOME}/.local/share/icons"
+  if [ -d "${XDG_DATA_HOME}/icons" ] && [ ! -L "${XDG_DATA_HOME}/icons" ]; then
+    cp -an "${XDG_DATA_HOME}/icons"/. "${HOME}/.local/share/icons"/ 2>/dev/null
+    rm -rf "${XDG_DATA_HOME}/icons"
+  fi
+  [ -L "${XDG_DATA_HOME}/icons" ] || ln -s "${HOME}/.local/share/icons" "${XDG_DATA_HOME}/icons"
+  [ -L "${XDG_DATA_HOME}/applications" ] && rm -f "${XDG_DATA_HOME}/applications"
+  mkdir -p "${XDG_DATA_HOME}/applications"
+fi
+
 exec zypak-wrapper /app/lib/helium/helium.real --class=net.imput.helium "$@" --no-default-browser-check
