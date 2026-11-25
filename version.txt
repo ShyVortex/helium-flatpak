@@ -1,2 +1,2 @@
-version: 0.22.3.1
-prerelease: true
+version: 0.22.4.1
+prerelease: false

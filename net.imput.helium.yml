@@ -144,13 +144,13 @@ modules:
     sources:
       - type: file
         only-arches: [x86_64]
-        url: https://github.com/imputnet/helium-linux/releases/download/0.22.3.1/helium-0.22.3.1-x86_64_linux.tar.xz
-        sha256: 991c926c50d456391c4d71c867870a60912618062b9b6c1efff3e2ca85f99a3b
+        url: https://github.com/imputnet/helium-linux/releases/download/0.22.4.1/helium-0.22.4.1-x86_64_linux.tar.xz
+        sha256: 00d0fd239315549e91253cf2495b021a403ccf98977a7925742b020c0577bd2c
         dest-filename: helium-linux.tar.xz
       - type: file
         only-arches: [aarch64]
-        url: https://github.com/imputnet/helium-linux/releases/download/0.22.3.1/helium-0.22.3.1-arm64_linux.tar.xz
-        sha256: 31396e60559a9325c916ca1a0824aea0334f04acd27e9fc7ae1c3723b5333b65
+        url: https://github.com/imputnet/helium-linux/releases/download/0.22.4.1/helium-0.22.4.1-arm64_linux.tar.xz
+        sha256: 51a1218ed818583e17d8a67f2960fe729c6d0ec037d1bef914a78f8ffb0fff57
         dest-filename: helium-linux.tar.xz
         
       - type: file
